@@ -3,6 +3,14 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:Segoe UI,Tahoma,Arial,sans-serif;background:#eef3f9;color:#1e293b;padding:14px 10px 60px;font-size:15px}
 .wrap{max-width:1200px;margin:0 auto}
+body.locked .wrap{display:none}
+.gate{position:fixed;inset:0;background:linear-gradient(135deg,#205389,#2E5FAC);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+body.locked .gate{display:flex}
+.gatebox{background:#fff;border-radius:18px;padding:28px 22px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.gatebox .lock{font-size:38px;margin-bottom:8px}.gatebox h3{color:#205389;font-size:18px;margin-bottom:6px}.gatebox p{color:#64748b;font-size:12.5px;margin-bottom:16px}
+.gatebox input{width:100%;padding:14px;border:2px solid #cbd5e1;border-radius:12px;font-size:20px;text-align:center;letter-spacing:6px;margin-bottom:12px}
+.gatebox button{width:100%;padding:13px;border:0;border-radius:12px;background:#205389;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.gatebox .err{color:#dc2626;font-size:12.5px;margin-top:10px;min-height:16px}
 header{background:linear-gradient(135deg,#205389,#2E5FAC);color:#fff;border-radius:16px;padding:18px 16px;text-align:center;margin-bottom:12px}
 header h1{font-size:18px;margin-bottom:6px;line-height:1.5}header p{opacity:.92;font-size:12.5px;line-height:1.7}
 .perf{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}.perf span{background:rgba(255,255,255,.16);padding:5px 11px;border-radius:14px;font-size:11px;direction:ltr}
@@ -26,7 +34,9 @@ header h1{font-size:18px;margin-bottom:6px;line-height:1.5}header p{opacity:.92;
 .actions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}.btn{flex:1;min-width:80px;text-align:center;padding:10px 8px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;color:#fff}.wa{background:#25D366}.tel{background:#205389}.mail{background:#64748b}
 .track{display:flex;gap:16px;font-size:12px;color:#475569;border-top:1px dashed #e2e8f0;padding-top:9px}.track label{display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none}.track input{width:20px;height:20px;accent-color:#25D366}
 footer{text-align:center;color:#94a3b8;font-size:11px;margin-top:18px;line-height:1.7}
-</style></head><body><div class="wrap">
+</style></head><body class="locked">
+<div class="gate"><div class="gatebox"><div class="lock">🔒</div><h3>صفحة محمية</h3><p>أدخل الرقم السري للدخول</p><input id="pw" type="password" inputmode="numeric" autocomplete="off" placeholder="••••••"><button id="go">دخول</button><div class="err" id="err"></div></div></div>
+<div class="wrap">
 <header><h1>الضاغطون على حملة 36 — متابعة المبيعات</h1><p>114 مهتماً · واتساب برسالة جاهزة · سجّل الإرسال بلمسة</p>
 <div class='perf'><span>wa.me: 138</span><span>profile: 99</span><span>facebook: 52</span><span>x: 30</span><span>site: 28</span><span>instagram: 22</span><span>TOTAL: 369</span></div>
 <div class="prog"><b id="pWa">واتساب: 0 / 0</b><b id="pTel">اتصال: 0</b><b id="pMail">بريد: 0</b></div></header>
@@ -159,13 +169,16 @@ footer{text-align:center;color:#94a3b8;font-size:11px;margin-top:18px;line-heigh
 </div>
 <footer>AirMenu · من /sent_campaigns/16/clicks — 13/10/2026 · التسجيل يُحفظ في متصفحك</footer>
 <script>
-var activeF="all";
+var K='MzM2Njk5';
+function unlock(){document.body.classList.remove("locked");}
+function tryUnlock(){var v=document.getElementById("pw").value;var ok=false;try{ok=(btoa(v)===K);}catch(e){ok=(v===atob(K));}if(ok){try{sessionStorage.setItem("airmenu_ok","1");}catch(e){}unlock();}else{document.getElementById("err").textContent="رقم غير صحيح، حاول مرة أخرى";}}
 function filt(){var q=document.getElementById("q").value.toLowerCase();document.querySelectorAll("#g .card").forEach(function(c){var okF=(activeF=="all"||c.getAttribute("data-cat")==activeF);var okQ=c.innerText.toLowerCase().indexOf(q)>-1;c.style.display=(okF&&okQ)?"":"none";});}
 function setFilter(f){activeF=f;document.querySelectorAll(".chip").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-f")==f)});filt();}
+var activeF="all";
 var KEY="airmenu_sent_v2";var st={};try{st=JSON.parse(localStorage.getItem(KEY)||"{}");}catch(e){st={};}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
 function rowMark(card){var o=st[card.getAttribute("data-e")]||{};card.classList.toggle("done",!!o.wa);}
 function counts(){var wa=0,tel=0,mail=0;var all=document.querySelectorAll("input.ck[data-ch=wa]").length;document.querySelectorAll("input.ck").forEach(function(cb){var c=st[cb.closest(".card").getAttribute("data-e")]||{};var h=cb.getAttribute("data-ch");if(c[h]){if(h=="wa")wa++;if(h=="tel")tel++;if(h=="mail")mail++;}});document.getElementById("pWa").textContent="واتساب: "+wa+" / "+all;document.getElementById("pTel").textContent="اتصال: "+tel;document.getElementById("pMail").textContent="بريد: "+mail;}
-document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll("input.ck").forEach(function(cb){var card=cb.closest(".card");var e=card.getAttribute("data-e"),ch=cb.getAttribute("data-ch");var o=st[e]||{};cb.checked=!!o[ch];cb.addEventListener("change",function(){st[e]=st[e]||{};st[e][ch]=cb.checked;save();if(ch=="wa")rowMark(card);counts();});});document.querySelectorAll("#g .card").forEach(rowMark);counts();});
+document.addEventListener("DOMContentLoaded",function(){var pw=document.getElementById("pw");var go=document.getElementById("go");go.addEventListener("click",tryUnlock);pw.addEventListener("keydown",function(e){if(e.key==="Enter")tryUnlock();});try{if(sessionStorage.getItem("airmenu_ok")==="1")unlock();}catch(e){}document.querySelectorAll("input.ck").forEach(function(cb){var card=cb.closest(".card");var e=card.getAttribute("data-e"),ch=cb.getAttribute("data-ch");var o=st[e]||{};cb.checked=!!o[ch];cb.addEventListener("change",function(){st[e]=st[e]||{};st[e][ch]=cb.checked;save();if(ch=="wa")rowMark(card);counts();});});document.querySelectorAll("#g .card").forEach(rowMark);counts();});
 </script>
 </div></body></html>
