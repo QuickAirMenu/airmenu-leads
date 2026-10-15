@@ -6,21 +6,25 @@
 var o = document.getElementById("out");
 function log(s){ o.textContent += "\n" + s; }
 
-// --- JSONBlob ---
-fetch("https://jsonblob.com/api/jsonBlob", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"probe":"jb"}'})
-  .then(function(r){ log("JB_CREATE=" + r.status + " acao=" + r.headers.get("access-control-allow-origin")); return r.headers.get("Location"); })
-  .then(function(loc){ log("JB_LOC=" + loc); if(!loc) return null;
-     return fetch(loc, {cache:"no-store"}).then(function(r){return r.text();}).then(function(t){ log("JB_READ=" + t); return loc; }); })
-  .then(function(loc){ if(!loc) return null;
-     return fetch(loc, {method:"PUT", headers:{"Content-Type":"application/json"}, body:'{"probe":"jb2"}'}).then(function(r){ log("JB_PUT=" + r.status); }); })
-  .catch(function(e){ log("JB_ERR=" + e); });
-
-// --- KVdb ---
-fetch("https://kvdb.io/", {method:"POST"})
+// --- KVdb with email ---
+fetch("https://kvdb.io/?email=sales@airmenu.net", {method:"POST"})
   .then(function(r){ return r.text(); })
-  .then(function(b){ log("KV_BUCKET=" + b.trim());
-     return fetch("https://kvdb.io/" + b.trim() + "/state", {method:"POST", body:"hello"}); })
-  .then(function(r){ log("KV_POST=" + r.status); })
+  .then(function(bk){
+     log("KV_BUCKET=" + bk.trim());
+     var b = bk.trim().replace(/\/+$/,''); b = b.substring(b.lastIndexOf('/')+1);
+     log("KV_ID=" + b);
+     return fetch("https://kvdb.io/" + b + "/state", {method:"POST", body:'{"p":1}'})
+       .then(function(r){ log("KV_POST=" + r.status); })
+       .then(function(){ return fetch("https://kvdb.io/" + b + "/state"); })
+       .then(function(r){ return r.text(); })
+       .then(function(t){ log("KV_READ=" + t); });
+  })
   .catch(function(e){ log("KV_ERR=" + e); });
+
+// --- jsonstorage.net ---
+fetch("https://api.jsonstorage.net/v1/json", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"p":1}'})
+  .then(function(r){ log("JS_STATUS=" + r.status); return r.text(); })
+  .then(function(t){ log("JS_BODY=" + t); })
+  .catch(function(e){ log("JS_ERR=" + e); });
 </script>
 </body></html>
