@@ -6,13 +6,12 @@
 var U = "https://textdb.dev/api/data/airmenu-comm-7Q2f9Kp3Zx8Lm4Vt1Rw6Nc5Bh";
 var o = document.getElementById("out");
 function log(s){ o.textContent += "\n" + s; }
-fetch(U, {cache:"no-store"}).then(function(r){return r.text();}).then(function(t){log("GET1="+t);}).catch(function(e){log("GET1_ERR="+e);});
-fetch(U, {method:"POST", body:'{"probe":777}'})
-  .then(function(r){ log("POST_STATUS="+r.status); })
-  .catch(function(e){ log("POST_ERR="+e); })
+fetch(U, {method:"POST", mode:"no-cors", body:'{"probe2":42}'})
+  .then(function(){ log("POST_NOCORS_RESOLVED"); })
+  .catch(function(e){ log("POST_NOCORS_ERR=" + e); })
   .then(function(){ return fetch(U, {cache:"no-store"}); })
   .then(function(r){ return r.text(); })
-  .then(function(t){ log("GET2="+t); })
-  .catch(function(e){ log("GET2_ERR="+e); });
+  .then(function(t){ log("GET_AFTER=" + t); })
+  .catch(function(e){ log("GET_ERR=" + e); });
 </script>
 </body></html>
