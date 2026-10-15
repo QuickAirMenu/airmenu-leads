@@ -3,26 +3,26 @@
 <body>
 <pre id="out">START</pre>
 <script>
-var T = "https://textdb.dev/api/data/airmenu-comm-7Q2f9Kp3Zx8Lm4Vt1Rw6Nc5Bh";
 var o = document.getElementById("out");
 function log(s){ o.textContent += "\n" + s; }
-var enc = encodeURIComponent(T);
 
-// corsproxy.io
-fetch("https://corsproxy.io/?url=" + enc, {method:"POST", body:'{"p":9}'})
-  .then(function(r){ log("CP_STATUS=" + r.status); })
-  .catch(function(e){ log("CP_ERR=" + e); })
-  .then(function(){ return fetch(T, {cache:"no-store"}); })
-  .then(function(r){ return r.text(); }).then(function(t){ log("READ_AFTER_CP=" + t); }).catch(function(e){ log("RE_ERR=" + e); });
+// jsonbase.io
+fetch("https://jsonbase.io/api/airmenu-comm-9f3a", {method:"PUT", headers:{"Content-Type":"application/json"}, body:'{"p":1}'})
+  .then(function(r){ log("JBA_STATUS=" + r.status); return r.text(); })
+  .then(function(t){ log("JBA_BODY=" + t.slice(0,120)); })
+  .then(function(){ return fetch("https://jsonbase.io/api/airmenu-comm-9f3a", {cache:"no-store"}); })
+  .then(function(r){ return r.text(); }).then(function(t){ log("JBA_READ=" + t.slice(0,120)); })
+  .catch(function(e){ log("JBA_ERR=" + e); });
 
-// codetabs
-fetch("https://api.codetabs.com/v1/proxy?quest=" + enc, {method:"POST", body:'{"p":10}'})
-  .then(function(r){ log("CT_STATUS=" + r.status); })
-  .catch(function(e){ log("CT_ERR=" + e); });
-
-// thingproxy
-fetch("https://thingproxy.freeboard.io/fetch/" + T, {method:"POST", body:'{"p":11}'})
-  .then(function(r){ log("TP_STATUS=" + r.status); })
-  .catch(function(e){ log("TP_ERR=" + e); });
+// keyvalue.immanuel.co (GET-based)
+fetch("https://keyvalue.immanuel.co/api/KeyVal/GetAppKey")
+  .then(function(r){ return r.text(); })
+  .then(function(k){ k=k.replace(/"/g,'').trim(); log("KV_KEY=" + k);
+     return fetch("https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/" + k + "/state/" + encodeURIComponent('{"p":2}'))
+       .then(function(r){ log("KVW_SET=" + r.status); })
+       .then(function(){ return fetch("https://keyvalue.immanuel.co/api/KeyVal/GetValue/" + k + "/state"); })
+       .then(function(r){ return r.text(); }).then(function(t){ log("KVW_GET=" + t); });
+  })
+  .catch(function(e){ log("KVW_ERR=" + e); });
 </script>
 </body></html>
