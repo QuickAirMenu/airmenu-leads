@@ -191,4 +191,20 @@ function rowMark(card){var o=st[card.getAttribute("data-e")]||{};card.classList.
 function counts(){var wa=0,tel=0,mail=0;document.querySelectorAll("input.ck").forEach(function(cb){var c=st[cb.closest(".card").getAttribute("data-e")]||{};var h=cb.getAttribute("data-ch");if(c[h]){if(h=="wa")wa++;if(h=="tel")tel++;if(h=="mail")mail++;}});document.getElementById("pWa").textContent="واتساب: "+wa;document.getElementById("pTel").textContent="اتصال: "+tel;document.getElementById("pMail").textContent="بريد: "+mail;}
 document.addEventListener("DOMContentLoaded",function(){var pw=document.getElementById("pw");var go=document.getElementById("go");go.addEventListener("click",tryUnlock);pw.addEventListener("keydown",function(e){if(e.key==="Enter")tryUnlock();});try{if(sessionStorage.getItem("airmenu_ok")==="1")unlock();}catch(e){}document.querySelectorAll("input.ck").forEach(function(cb){var card=cb.closest(".card");var e=card.getAttribute("data-e"),ch=cb.getAttribute("data-ch");var o=st[e]||{};cb.checked=!!o[ch];cb.addEventListener("change",function(){st[e]=st[e]||{};st[e][ch]=cb.checked;save();if(ch=="wa")rowMark(card);counts();});});document.querySelectorAll("#g .card").forEach(rowMark);counts();});
 </script>
-</div></body></html>
+</div><script>
+(function(){
+  var SYNC_URL="https://textdb.dev/api/data/airmenu-comm-7Q2f9Kp3Zx8Lm4Vt1Rw6Nc5Bh";
+  function setStatus(s){var el=document.getElementById("sync");if(!el){var p=document.querySelector("header .prog");if(p){el=document.createElement("b");el.id="sync";p.appendChild(el);}}if(el)el.textContent=(s==="ok")?"☁️ متزامن":(s==="err"?"⚠️ غير متصل":"📡 ...");}
+  function syncApply(){try{localStorage.setItem("airmenu_sent_v2",JSON.stringify(st));}catch(e){}document.querySelectorAll("input.ck").forEach(function(cb){var card=cb.closest(".card");var e=card.getAttribute("data-e"),ch=cb.getAttribute("data-ch");var o=st[e]||{};cb.checked=!!o[ch];});document.querySelectorAll("#g .card").forEach(function(c){try{rowMark(c);}catch(e){}});try{counts();}catch(e){}}
+  function push(){fetch(SYNC_URL,{method:"POST",body:JSON.stringify(st)}).then(function(){setStatus("ok");}).catch(function(){setStatus("err");});}
+  function pull(cb){fetch(SYNC_URL,{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){var o={};try{o=JSON.parse(t||"{}")||{};}catch(e){o={};}cb(o);}).catch(function(){cb(null);});}
+  function init(){
+    document.addEventListener("change",function(ev){if(ev.target&&ev.target.classList&&ev.target.classList.contains("ck")){push();}},false);
+    setStatus("...");
+    pull(function(o){if(o&&Object.keys(o).length){st=o;syncApply();setStatus("ok");}else{push();setStatus("ok");}});
+    setInterval(function(){if(document.body.classList.contains("locked"))return;pull(function(o){if(o&&JSON.stringify(o)!==JSON.stringify(st)){st=o;syncApply();}});},12000);
+  }
+  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
+})();
+</script>
+</body></html>
