@@ -5,18 +5,17 @@
 <script>
 var o = document.getElementById("out");
 function log(s){ o.textContent += "\n" + s; }
-fetch("https://kvdb.io/", {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:"email=sales@airmenu.net"})
-  .then(function(r){ log("KV_CREATE_STATUS=" + r.status); return r.text(); })
-  .then(function(bk){
-     log("KV_BUCKET=" + bk.trim());
-     var b = bk.trim().replace(/\/+$/,''); b = b.substring(b.lastIndexOf('/')+1);
-     log("KV_ID=" + b);
-     return fetch("https://kvdb.io/" + b + "/state", {method:"POST", body:'{"p":1}'})
-       .then(function(r){ log("KV_POST=" + r.status); })
-       .then(function(){ return fetch("https://kvdb.io/" + b + "/state"); })
-       .then(function(r){ return r.text(); })
-       .then(function(t){ log("KV_READ=" + t); });
-  })
-  .catch(function(e){ log("KV_ERR=" + e); });
+
+// --- jsonbox ---
+fetch("https://jsonbox.io/airmenu-comm-9f3a", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"p":1}'})
+  .then(function(r){ log("XBOX_STATUS=" + r.status); return r.text(); })
+  .then(function(t){ log("XBOX_BODY=" + t); })
+  .catch(function(e){ log("XBOX_ERR=" + e); });
+
+// --- extendsclass json storage ---
+fetch("https://json.extendsclass.com/bin", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"p":1}'})
+  .then(function(r){ log("EC_STATUS=" + r.status); return r.text(); })
+  .then(function(t){ log("EC_BODY=" + t); })
+  .catch(function(e){ log("EC_ERR=" + e); });
 </script>
 </body></html>
