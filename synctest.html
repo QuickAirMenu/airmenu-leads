@@ -5,10 +5,8 @@
 <script>
 var o = document.getElementById("out");
 function log(s){ o.textContent += "\n" + s; }
-
-// --- KVdb with email ---
-fetch("https://kvdb.io/?email=sales@airmenu.net", {method:"POST"})
-  .then(function(r){ return r.text(); })
+fetch("https://kvdb.io/", {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:"email=sales@airmenu.net"})
+  .then(function(r){ log("KV_CREATE_STATUS=" + r.status); return r.text(); })
   .then(function(bk){
      log("KV_BUCKET=" + bk.trim());
      var b = bk.trim().replace(/\/+$/,''); b = b.substring(b.lastIndexOf('/')+1);
@@ -20,11 +18,5 @@ fetch("https://kvdb.io/?email=sales@airmenu.net", {method:"POST"})
        .then(function(t){ log("KV_READ=" + t); });
   })
   .catch(function(e){ log("KV_ERR=" + e); });
-
-// --- jsonstorage.net ---
-fetch("https://api.jsonstorage.net/v1/json", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"p":1}'})
-  .then(function(r){ log("JS_STATUS=" + r.status); return r.text(); })
-  .then(function(t){ log("JS_BODY=" + t); })
-  .catch(function(e){ log("JS_ERR=" + e); });
 </script>
 </body></html>
