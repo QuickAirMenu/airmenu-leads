@@ -2,25 +2,20 @@
 <html><head><meta charset="utf-8"><title>synctest</title></head>
 <body>
 <pre id="out">START</pre>
+<form id="f" method="POST" action="https://textdb.dev/api/data/airmenu-comm-7Q2f9Kp3Zx8Lm4Vt1Rw6Nc5Bh" enctype="text/plain" target="sink">
+<textarea name="x">{"probe":123}</textarea>
+</form>
+<iframe name="sink" style="display:none"></iframe>
 <script>
 var o = document.getElementById("out");
 function log(s){ o.textContent += "\n" + s; }
-
-// api.keyvalue.xyz
-fetch("https://api.keyvalue.xyz/new/airmenu-state")
-  .then(function(r){ return r.text(); })
-  .then(function(id){ id=id.trim(); log("KVX_ID=" + id); window.__id=id;
-     return fetch("https://api.keyvalue.xyz/" + id + "/state", {method:"POST", body:'{"p":3}'})
-       .then(function(r){ log("KVX_SET=" + r.status); })
-       .then(function(){ return fetch("https://api.keyvalue.xyz/" + window.__id + "/state"); })
-       .then(function(r){ return r.text(); }).then(function(t){ log("KVX_GET=" + t); });
-  })
-  .catch(function(e){ log("KVX_ERR=" + e); });
-
-// pantry
-fetch("https://getpantry.cloud/apiv1/pantry", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"email":"sales@airmenu.net"}'})
-  .then(function(r){ log("PANTRY_STATUS=" + r.status); return r.text(); })
-  .then(function(t){ log("PANTRY_BODY=" + t.slice(0,160)); })
-  .catch(function(e){ log("PANTRY_ERR=" + e); });
+document.getElementById("f").submit();
+log("submitted form");
+setTimeout(function(){
+  fetch("https://textdb.dev/api/data/airmenu-comm-7Q2f9Kp3Zx8Lm4Vt1Rw6Nc5Bh", {cache:"no-store"})
+    .then(function(r){ return r.text(); })
+    .then(function(t){ log("READ_AFTER_FORM=" + t); })
+    .catch(function(e){ log("READ_ERR=" + e); });
+}, 4000);
 </script>
 </body></html>
