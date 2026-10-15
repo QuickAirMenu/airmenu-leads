@@ -6,23 +6,21 @@
 var o = document.getElementById("out");
 function log(s){ o.textContent += "\n" + s; }
 
-// jsonbase.io
-fetch("https://jsonbase.io/api/airmenu-comm-9f3a", {method:"PUT", headers:{"Content-Type":"application/json"}, body:'{"p":1}'})
-  .then(function(r){ log("JBA_STATUS=" + r.status); return r.text(); })
-  .then(function(t){ log("JBA_BODY=" + t.slice(0,120)); })
-  .then(function(){ return fetch("https://jsonbase.io/api/airmenu-comm-9f3a", {cache:"no-store"}); })
-  .then(function(r){ return r.text(); }).then(function(t){ log("JBA_READ=" + t.slice(0,120)); })
-  .catch(function(e){ log("JBA_ERR=" + e); });
-
-// keyvalue.immanuel.co (GET-based)
-fetch("https://keyvalue.immanuel.co/api/KeyVal/GetAppKey")
+// api.keyvalue.xyz
+fetch("https://api.keyvalue.xyz/new/airmenu-state")
   .then(function(r){ return r.text(); })
-  .then(function(k){ k=k.replace(/"/g,'').trim(); log("KV_KEY=" + k);
-     return fetch("https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/" + k + "/state/" + encodeURIComponent('{"p":2}'))
-       .then(function(r){ log("KVW_SET=" + r.status); })
-       .then(function(){ return fetch("https://keyvalue.immanuel.co/api/KeyVal/GetValue/" + k + "/state"); })
-       .then(function(r){ return r.text(); }).then(function(t){ log("KVW_GET=" + t); });
+  .then(function(id){ id=id.trim(); log("KVX_ID=" + id); window.__id=id;
+     return fetch("https://api.keyvalue.xyz/" + id + "/state", {method:"POST", body:'{"p":3}'})
+       .then(function(r){ log("KVX_SET=" + r.status); })
+       .then(function(){ return fetch("https://api.keyvalue.xyz/" + window.__id + "/state"); })
+       .then(function(r){ return r.text(); }).then(function(t){ log("KVX_GET=" + t); });
   })
-  .catch(function(e){ log("KVW_ERR=" + e); });
+  .catch(function(e){ log("KVX_ERR=" + e); });
+
+// pantry
+fetch("https://getpantry.cloud/apiv1/pantry", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"email":"sales@airmenu.net"}'})
+  .then(function(r){ log("PANTRY_STATUS=" + r.status); return r.text(); })
+  .then(function(t){ log("PANTRY_BODY=" + t.slice(0,160)); })
+  .catch(function(e){ log("PANTRY_ERR=" + e); });
 </script>
 </body></html>
