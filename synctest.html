@@ -3,19 +3,26 @@
 <body>
 <pre id="out">START</pre>
 <script>
+var T = "https://textdb.dev/api/data/airmenu-comm-7Q2f9Kp3Zx8Lm4Vt1Rw6Nc5Bh";
 var o = document.getElementById("out");
 function log(s){ o.textContent += "\n" + s; }
+var enc = encodeURIComponent(T);
 
-// --- jsonbox ---
-fetch("https://jsonbox.io/airmenu-comm-9f3a", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"p":1}'})
-  .then(function(r){ log("XBOX_STATUS=" + r.status); return r.text(); })
-  .then(function(t){ log("XBOX_BODY=" + t); })
-  .catch(function(e){ log("XBOX_ERR=" + e); });
+// corsproxy.io
+fetch("https://corsproxy.io/?url=" + enc, {method:"POST", body:'{"p":9}'})
+  .then(function(r){ log("CP_STATUS=" + r.status); })
+  .catch(function(e){ log("CP_ERR=" + e); })
+  .then(function(){ return fetch(T, {cache:"no-store"}); })
+  .then(function(r){ return r.text(); }).then(function(t){ log("READ_AFTER_CP=" + t); }).catch(function(e){ log("RE_ERR=" + e); });
 
-// --- extendsclass json storage ---
-fetch("https://json.extendsclass.com/bin", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"p":1}'})
-  .then(function(r){ log("EC_STATUS=" + r.status); return r.text(); })
-  .then(function(t){ log("EC_BODY=" + t); })
-  .catch(function(e){ log("EC_ERR=" + e); });
+// codetabs
+fetch("https://api.codetabs.com/v1/proxy?quest=" + enc, {method:"POST", body:'{"p":10}'})
+  .then(function(r){ log("CT_STATUS=" + r.status); })
+  .catch(function(e){ log("CT_ERR=" + e); });
+
+// thingproxy
+fetch("https://thingproxy.freeboard.io/fetch/" + T, {method:"POST", body:'{"p":11}'})
+  .then(function(r){ log("TP_STATUS=" + r.status); })
+  .catch(function(e){ log("TP_ERR=" + e); });
 </script>
 </body></html>
