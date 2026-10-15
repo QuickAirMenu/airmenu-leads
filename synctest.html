@@ -3,15 +3,24 @@
 <body>
 <pre id="out">START</pre>
 <script>
-var U = "https://textdb.dev/api/data/airmenu-comm-7Q2f9Kp3Zx8Lm4Vt1Rw6Nc5Bh";
 var o = document.getElementById("out");
 function log(s){ o.textContent += "\n" + s; }
-fetch(U, {method:"POST", mode:"no-cors", body:'{"probe2":42}'})
-  .then(function(){ log("POST_NOCORS_RESOLVED"); })
-  .catch(function(e){ log("POST_NOCORS_ERR=" + e); })
-  .then(function(){ return fetch(U, {cache:"no-store"}); })
+
+// --- JSONBlob ---
+fetch("https://jsonblob.com/api/jsonBlob", {method:"POST", headers:{"Content-Type":"application/json"}, body:'{"probe":"jb"}'})
+  .then(function(r){ log("JB_CREATE=" + r.status + " acao=" + r.headers.get("access-control-allow-origin")); return r.headers.get("Location"); })
+  .then(function(loc){ log("JB_LOC=" + loc); if(!loc) return null;
+     return fetch(loc, {cache:"no-store"}).then(function(r){return r.text();}).then(function(t){ log("JB_READ=" + t); return loc; }); })
+  .then(function(loc){ if(!loc) return null;
+     return fetch(loc, {method:"PUT", headers:{"Content-Type":"application/json"}, body:'{"probe":"jb2"}'}).then(function(r){ log("JB_PUT=" + r.status); }); })
+  .catch(function(e){ log("JB_ERR=" + e); });
+
+// --- KVdb ---
+fetch("https://kvdb.io/", {method:"POST"})
   .then(function(r){ return r.text(); })
-  .then(function(t){ log("GET_AFTER=" + t); })
-  .catch(function(e){ log("GET_ERR=" + e); });
+  .then(function(b){ log("KV_BUCKET=" + b.trim());
+     return fetch("https://kvdb.io/" + b.trim() + "/state", {method:"POST", body:"hello"}); })
+  .then(function(r){ log("KV_POST=" + r.status); })
+  .catch(function(e){ log("KV_ERR=" + e); });
 </script>
 </body></html>
